@@ -1,0 +1,14 @@
+main: pl.bartixen.bxteam.Main
+version: 1.0
+author: Bartixen
+name: BxTeam
+api-version: 1.16
+website: https://bartixen.pl
+description: Teamy
+
+commands:
+  team:
+    description: Wyswietla teamy
+  teamy:
+    description: Wyswietla teamy
+  bxteam:
