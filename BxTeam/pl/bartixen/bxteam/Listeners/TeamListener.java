@@ -1,7 +1,6 @@
 package pl.bartixen.bxteam.Listeners;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,13 +15,11 @@ import pl.bartixen.bxteam.Main;
 import pl.bartixen.bxteam.Utils.ItemBuilder;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class TeamListener implements Listener {
 
@@ -77,6 +74,10 @@ public class TeamListener implements Listener {
             if (e.getRawSlot() < e.getInventory().getSize()) {
                 e.setCancelled(true);
                 p.closeInventory();
+                if (e.getRawSlot() == 13) {
+                    String team = data.getData().getString(uuid + ".lider_teamu");
+                    zarzadanie_team(p, team);
+                }
                 if (e.getRawSlot() == 15) {
                     String team = data.getData().getString(uuid + ".lider_teamu");
                     zapros_gracza(p, team);
@@ -104,9 +105,9 @@ public class TeamListener implements Listener {
                         teamy.remove(team);
                         data.getData().set("teamy", teamy);
                         data.saveData();
-                        p.sendMessage("§7Pomyślnie usunieto team");
+                        p.sendMessage("§fPomyślnie usunieto team");
                         for (Player players : Bukkit.getOnlinePlayers()) {
-                            players.sendMessage("§fGracz §9" + p.getDisplayName() + " §fusunął team: §9" + team);
+                            players.sendMessage("§7Gracz §9" + p.getDisplayName() + " §7usunal team: §9" + team);
                         }
                     }
                     if (e.getRawSlot() == 14) {
@@ -116,6 +117,10 @@ public class TeamListener implements Listener {
                 }
             }
         }
+    }
+
+    public void zarzadanie_team(Player p, String team) {
+        p.sendMessage(team);
     }
 
     public void dolaczenie_team(Player p) throws IOException {
@@ -128,9 +133,9 @@ public class TeamListener implements Listener {
         gracze.add(p.getDisplayName());
         data.getData().set(team + ".gracze", gracze);
         data.saveData();
-        p.sendMessage("§7Pomyślnie dołączono do teamu");
+        p.sendMessage("§7Pomyślnie dolaczono do teamu");
         for (Player players : Bukkit.getOnlinePlayers()) {
-            players.sendMessage("§fGracz §9" + p.getDisplayName() + " §fdołączył do teamu: §9" + team);
+            players.sendMessage("§7Gracz §9" + p.getDisplayName() + " §7dolaczył do teamu: §9" + team);
         }
     }
 
@@ -146,7 +151,7 @@ public class TeamListener implements Listener {
     public void zapros_gracza(Player p, String team) {
         UUID uuid = p.getUniqueId();
         if (data.getData().getString(team + ".lider").equals(p.getDisplayName())) {
-            p.sendTitle("§9§lDodaj gracza", "§f§lnapisz nazwe gracza na czacie §7§l(30s)", 5, 600, 5);
+            p.sendMessage("§fNapisz nazwe gracza na czacie §7(§930s§7)");
             data.getData().set(uuid + ".zapraszanie.aktywne", true);
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
@@ -178,16 +183,17 @@ public class TeamListener implements Listener {
                     data.getData().set(uuid + ".zapraszanie", null);
                     data.getData().set(celuuid + ".zaproszenie", team);
                     data.saveData();
-                    p.sendTitle("§9§lZaproszono gracza", "§f§lgracz §9§l" + cel.getDisplayName() + " §f§lzostal zaproszony", 5, 30, 5);
+                    p.sendMessage("§7Pomyślnie zaproszono gracza §9" + cel.getDisplayName() + " §7do teamu");
+                    cel.sendMessage("§fOtrzymaleś zaproszenie do teamu §7(aby dolaczyć użyj /team)");
                     e.setCancelled(true);
                 } else {
-                    p.sendTitle("§c§lBłąd podczas zapraszania", "§e§lten gracz jest już w team", 5, 40, 5);
+                    p.sendMessage("§cGracz jest już w team");
                     data.getData().set(uuid + ".zapraszanie", null);
                     data.saveData();
                     e.setCancelled(true);
                 }
             } else {
-                p.sendTitle("§c§lBłąd podczas zapraszania", "§e§lten gracz jest offline", 5, 40, 5);
+                p.sendMessage("§cGracz jest offline");
                 data.getData().set(uuid + ".zapraszanie", null);
                 data.saveData();
                 e.setCancelled(true);
@@ -238,7 +244,7 @@ public class TeamListener implements Listener {
     public void create_team(Player p) {
         UUID uuid = p.getUniqueId();
         if (data.getData().getString(uuid + ".lider_teamu") == null && data.getData().getString(uuid + ".gracz") == null) {
-            p.sendTitle("§9§lNadaj nazwe", "§f§lnapisz nazwe swojego teamu na czacie §7§l(30s)", 5, 600, 5);
+            p.sendMessage("§fNapisz nazwe swojego teamu na czacie §7(§930s§7)");
             data.getData().set(uuid + ".create_team.aktywne_nazywanie", true);
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
@@ -277,7 +283,7 @@ public class TeamListener implements Listener {
             ItemBuilder slot11 = (new ItemBuilder(Material.PAPER, 1)).setTitle("§e§lInformacje o team").addLore("§7").addLore("§fLider teamu: §9" + lider).addLore("§fData powstania: §9" + datapowstania).addLore("§7").addLore("§7Więcej informacji wkrótce");
             inventory.setItem(11, slot11.build());
 
-            ItemBuilder slot13 = (new ItemBuilder(Material.CHEST, 1)).setTitle("§e§lOsoby należące do teamu").addLore("§7").addLore("§fLider: §9" + lider).addLore("§fGracze: §9" + gracze);
+            ItemBuilder slot13 = (new ItemBuilder(Material.CHEST, 1)).setTitle("§e§lOsoby należące do teamu").addLore("§7").addLore("§fLider: §9" + lider).addLore("§fGracze: §9" + gracze).addLore("").addLore("§7(Kilknij aby nimi zarzadzac)");
             inventory.setItem(13, slot13.build());
 
             ItemBuilder slot15 = (new ItemBuilder(Material.TRIPWIRE_HOOK, 1)).setTitle("§e§lZaproś osoby do teamu").addLore("§7").addLore("§7Kliknij, aby zaprosić osoby do teamu");
@@ -312,7 +318,7 @@ public class TeamListener implements Listener {
             inventory.setItem(25, backguard.build());
             p.openInventory(inventory);
         } else {
-            p.sendMessage("§cWystąpił błąd podczas weryfikacji lidera");
+            p.sendMessage("§cWystąpil blad podczas weryfikacji lidera");
         }
     }
 
@@ -366,28 +372,34 @@ public class TeamListener implements Listener {
             String characters = plugin.getConfig().getString("allowedteamname");
             String messange = e.getMessage();
             if (messange.matches(characters)) {
-                Date now = new Date();
-                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
-                data.getData().set(uuid + ".create_team", null);
-                data.getData().set(messange + ".lider", p.getDisplayName());
-                data.getData().set(messange + ".data", format.format(now));
-                ArrayList<String> gracze = new ArrayList<>();
-                gracze.add(p.getDisplayName());
-                data.getData().set(messange + ".gracze", gracze);
-                data.getData().set(uuid + ".lider_teamu", messange);
-                ArrayList<String> teamy;
-                teamy = new ArrayList<>(data.getData().getStringList("teamy"));
-                teamy.add(messange);
-                data.getData().set("teamy", teamy);
-                data.saveData();
-                p.sendTitle("§9§lTEAM: §e§l" + messange, "§f§lpomyślnie stworzono team", 5, 30, 5);
-                p.sendMessage("§7Twoja nazwa teamu §7to: §9" + messange);
-                e.setCancelled(true);
-                for (Player players : Bukkit.getOnlinePlayers()) {
-                    players.sendMessage("§fGracz §9" + p.getDisplayName() + " §fstworzył team: §9" + messange);
+                if (messange.length() > 2 && messange.length() < 17) {
+                    Date now = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+                    data.getData().set(uuid + ".create_team", null);
+                    data.getData().set(messange + ".lider", p.getDisplayName());
+                    data.getData().set(messange + ".data", format.format(now));
+                    ArrayList<String> gracze = new ArrayList<>();
+                    gracze.add(p.getDisplayName());
+                    data.getData().set(messange + ".gracze", gracze);
+                    data.getData().set(uuid + ".lider_teamu", messange);
+                    ArrayList<String> teamy;
+                    teamy = new ArrayList<>(data.getData().getStringList("teamy"));
+                    teamy.add(messange);
+                    data.getData().set("teamy", teamy);
+                    data.saveData();
+                    p.sendMessage("§7Twoja nazwa teamu §7to: §9" + messange);
+                    e.setCancelled(true);
+                    for (Player players : Bukkit.getOnlinePlayers()) {
+                        players.sendMessage("§7Gracz §9" + p.getDisplayName() + " §7stworzyl team: §9" + messange);
+                    }
+                } else {
+                    p.sendMessage("§cNazwa teamu musi miec minimum 3 znaki, maksymalnie 16 znaków");
+                    data.getData().set(uuid + ".create_team", null);
+                    data.saveData();
+                    e.setCancelled(true);
                 }
             } else {
-                p.sendTitle("§c§lBłąd podczas tworzenia", "§e§lnazwa teamu posiada niedozwolone znaki", 5, 40, 5);
+                p.sendMessage("§cNazwa teamu posiada niedozwolone znaki");
                 data.getData().set(uuid + ".create_team", null);
                 data.saveData();
                 e.setCancelled(true);
