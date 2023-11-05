@@ -1,8 +1,8 @@
 main: pl.bartixen.bxteam.Main
-version: 2.4
+version: 3.1
 author: Bartixen
 name: BxTeam
-api-version: 1.17
+api-version: '1.20'
 website: https://bartixen.pl
 description: Teamy
 

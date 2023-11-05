@@ -76,7 +76,7 @@ public class TeamListener implements Listener {
                 p.closeInventory();
                 if (e.getRawSlot() == 13) {
                     String team = data.getData().getString(uuid + ".lider_teamu");
-                    zarzadanie_team(p, team);
+                    e.setCancelled(true);
                 }
                 if (e.getRawSlot() == 15) {
                     String team = data.getData().getString(uuid + ".lider_teamu");
@@ -181,6 +181,7 @@ public class TeamListener implements Listener {
                 if (data.getData().getString(celuuid + ".lider_teamu") == null && data.getData().getString(celuuid + ".gracz") == null) {
                     String team = data.getData().getString(uuid + ".lider_teamu");
                     data.getData().set(uuid + ".zapraszanie", null);
+                    data.getData().set(uuid + ".create_team.zapraszanie", null);
                     data.getData().set(celuuid + ".zaproszenie", team);
                     data.saveData();
                     p.sendMessage("§7Pomyślnie zaproszono gracza §9" + cel.getDisplayName() + " §7do teamu");
@@ -189,12 +190,14 @@ public class TeamListener implements Listener {
                 } else {
                     p.sendMessage("§cGracz jest już w team");
                     data.getData().set(uuid + ".zapraszanie", null);
+                    data.getData().set(uuid + ".create_team.zapraszanie", null);
                     data.saveData();
                     e.setCancelled(true);
                 }
             } else {
                 p.sendMessage("§cGracz jest offline");
                 data.getData().set(uuid + ".zapraszanie", null);
+                data.getData().set(uuid + ".create_team.zapraszanie", null);
                 data.saveData();
                 e.setCancelled(true);
             }
@@ -283,7 +286,7 @@ public class TeamListener implements Listener {
             ItemBuilder slot11 = (new ItemBuilder(Material.PAPER, 1)).setTitle("§e§lInformacje o team").addLore("§7").addLore("§fLider teamu: §9" + lider).addLore("§fData powstania: §9" + datapowstania).addLore("§7").addLore("§7Więcej informacji wkrótce");
             inventory.setItem(11, slot11.build());
 
-            ItemBuilder slot13 = (new ItemBuilder(Material.CHEST, 1)).setTitle("§e§lOsoby należące do teamu").addLore("§7").addLore("§fLider: §9" + lider).addLore("§fGracze: §9" + gracze).addLore("").addLore("§7(Kilknij aby nimi zarzadzac)");
+            ItemBuilder slot13 = (new ItemBuilder(Material.CHEST, 1)).setTitle("§e§lOsoby należące do teamu").addLore("§7").addLore("§fLider: §9" + lider).addLore("§fGracze: §9" + gracze);
             inventory.setItem(13, slot13.build());
 
             ItemBuilder slot15 = (new ItemBuilder(Material.TRIPWIRE_HOOK, 1)).setTitle("§e§lZaproś osoby do teamu").addLore("§7").addLore("§7Kliknij, aby zaprosić osoby do teamu");
@@ -373,34 +376,49 @@ public class TeamListener implements Listener {
             String messange = e.getMessage();
             if (messange.matches(characters)) {
                 if (messange.length() > 2 && messange.length() < 17) {
-                    Date now = new Date();
-                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
-                    data.getData().set(uuid + ".create_team", null);
-                    data.getData().set(messange + ".lider", p.getDisplayName());
-                    data.getData().set(messange + ".data", format.format(now));
-                    ArrayList<String> gracze = new ArrayList<>();
-                    gracze.add(p.getDisplayName());
-                    data.getData().set(messange + ".gracze", gracze);
-                    data.getData().set(uuid + ".lider_teamu", messange);
-                    ArrayList<String> teamy;
-                    teamy = new ArrayList<>(data.getData().getStringList("teamy"));
-                    teamy.add(messange);
-                    data.getData().set("teamy", teamy);
-                    data.saveData();
-                    p.sendMessage("§7Twoja nazwa teamu §7to: §9" + messange);
-                    e.setCancelled(true);
-                    for (Player players : Bukkit.getOnlinePlayers()) {
-                        players.sendMessage("§7Gracz §9" + p.getDisplayName() + " §7stworzyl team: §9" + messange);
+                    List<String> teamy = data.getData().getStringList("teamy");
+                    Boolean check = true;
+                    for (String team : teamy) {
+                        if (team.toLowerCase().equals(messange.toLowerCase())) {
+                            check = false;
+                        }
+                    }
+                    if (check) {
+                        Date now = new Date();
+                        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+                        data.getData().set(uuid + ".create_team", null);
+                        data.getData().set(messange + ".lider", p.getDisplayName());
+                        data.getData().set(messange + ".data", format.format(now));
+                        ArrayList<String> gracze = new ArrayList<>();
+                        gracze.add(p.getDisplayName());
+                        data.getData().set(messange + ".gracze", gracze);
+                        data.getData().set(uuid + ".lider_teamu", messange);
+                        teamy.add(messange);
+                        data.getData().set("teamy", teamy);
+                        data.saveData();
+                        p.sendMessage("§7Twoja nazwa teamu §7to: §9" + messange);
+                        e.setCancelled(true);
+                        for (Player players : Bukkit.getOnlinePlayers()) {
+                            players.sendMessage("§7Gracz §9" + p.getDisplayName() + " §7stworzyl team: §9" + messange);
+                        }
+                    } else {
+                        p.sendMessage("§cTaka nazwa teamu już istnieje");
+                        data.getData().set(uuid + ".create_team", null);
+                        data.getData().set(uuid + ".create_team.aktywne_nazywanie", null);
+                        data.saveData();
+                        e.setCancelled(true);
                     }
                 } else {
                     p.sendMessage("§cNazwa teamu musi miec minimum 3 znaki, maksymalnie 16 znaków");
                     data.getData().set(uuid + ".create_team", null);
+                    data.getData().set(uuid + ".create_team.aktywne_nazywanie", null);
                     data.saveData();
                     e.setCancelled(true);
                 }
             } else {
                 p.sendMessage("§cNazwa teamu posiada niedozwolone znaki");
                 data.getData().set(uuid + ".create_team", null);
+                data.getData().set(uuid + ".create_team.aktywne_nazywanie", null);
                 data.saveData();
                 e.setCancelled(true);
             }
