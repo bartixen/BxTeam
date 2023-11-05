@@ -47,18 +47,18 @@ public class TeamCommand implements CommandExecutor {
         UUID uuid = p.getUniqueId();
 
         Inventory inventory = Bukkit.createInventory((InventoryHolder) p, 27, ("§9§lTEAMY"));
-        if (data.getData().getString(uuid + ".lider_teamu") == null && data.getData().getString(uuid + ".gracz") == null) {
+        if (data.getData().getString(uuid + ".team_leader") == null && data.getData().getString(uuid + ".player") == null) {
             ItemBuilder slot11 = (new ItemBuilder(Material.CRAFTING_TABLE, 1)).setTitle("§e§lStwórz team").addLore("§7").addLore("§fKliknij, aby go stworzyć i potem nim zarzadzać");
             inventory.setItem(11, slot11.build());
         } else {
             ItemBuilder slot11 = (new ItemBuilder(Material.CHEST, 1)).setTitle("§e§lTwój team").addLore("§7").addLore("§fKliknij, aby zobaczyć swój team");
             inventory.setItem(11, slot11.build());
         }
-        if (data.getData().getString(uuid + ".zaproszenie") == null) {
+        if (data.getData().getString(uuid + ".invitation") == null) {
             ItemBuilder slot13 = (new ItemBuilder(Material.LIGHT_GRAY_CONCRETE, 1)).setTitle("§7§lBrak zaproszeń do teamu").addLore("§7").addLore("§fObecnie nie posiadasz żadnych zaproszeń,").addLore("§fjeżeli chcesz dostać zaproszenie do danego teamu").addLore("§fto poproś o to lidera teamu");
             inventory.setItem(13, slot13.build());
         } else {
-            String team = data.getData().getString(uuid + ".zaproszenie");
+            String team = data.getData().getString(uuid + ".invitation");
             ItemBuilder slot13 = (new ItemBuilder(Material.LIME_CONCRETE, 1)).setTitle("§a§lPosiadasz zaproszenie do teamu: " + team).addLore("§7").addLore("§fKliknij, aby dołączyć do teamu");
             inventory.setItem(13, slot13.build());
         }

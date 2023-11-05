@@ -36,7 +36,7 @@ public class DataManager {
                 path.mkdirs();
                 file.createNewFile();
             } catch (IOException e) {
-                Bukkit.getServer().getLogger().log(Level.WARNING, "§cNie udalo sie utworzyc pliku §eteam.yml");
+                Bukkit.getServer().getLogger().log(Level.WARNING, "Failed to create file team.yml");
             }
         }
         data = YamlConfiguration.loadConfiguration(file);
@@ -50,7 +50,7 @@ public class DataManager {
         try {
             data.save(file);
         } catch (IIOException e) {
-            Bukkit.getServer().getLogger().log(Level.WARNING, "§cNie udalo sie zapisac pliku §eteam.yml");
+            Bukkit.getServer().getLogger().log(Level.WARNING, "Failed to save the file team.yml");
         }
     }
 

@@ -25,16 +25,16 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         if ((!getDescription().getName().contains("BxTeam")) || (!getDescription().getAuthors().contains("Bartixen"))) {
-            getLogger().log(Level.WARNING, "§8[========== §9BxTeam §8==========]");
-            getLogger().log(Level.WARNING, "§cPlugin zostal wylaczony z powodu edytowania pliku §eplugin.yml");
-            getLogger().log(Level.WARNING, "§8[========== §9BxTeam §8==========]");
+            getLogger().log(Level.WARNING, "[========== BxTeam ==========]");
+            getLogger().log(Level.WARNING, "Plugin zostal wylaczony z powodu edytowania pliku plugin.yml");
+            getLogger().log(Level.WARNING, "[========== BxTeam ==========]");
             Bukkit.getServer().getPluginManager().disablePlugin(this);
         } else {
-            getLogger().log(Level.INFO, "§8[========== §9BxTeam §8==========]");
-            getLogger().log(Level.INFO, "§fVersion: §b{0}", getDescription().getVersion());
-            getLogger().log(Level.INFO, "§fAuthor: §bBartixen");
-            getLogger().log(Level.INFO, "§fWebsite: §bhttps://bartixen.pl");
-            getLogger().log(Level.INFO, "§8[========== §9BxTeam §8==========]");
+            getLogger().log(Level.INFO, "[========== BxTeam ==========]");
+            getLogger().log(Level.INFO, "Version: {0}", getDescription().getVersion());
+            getLogger().log(Level.INFO, "Author: Bartixen");
+            getLogger().log(Level.INFO, "Website: https://bartixen.pl");
+            getLogger().log(Level.INFO, "[========== BxTeam ==========]");
 
             getConfig().options().copyDefaults(true);
             saveConfig();

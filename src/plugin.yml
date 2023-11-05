@@ -1,14 +1,15 @@
 main: pl.bartixen.bxteam.Main
-version: 3.1
+version: 4.0.1
 author: Bartixen
 name: BxTeam
 api-version: '1.20'
 website: https://bartixen.pl
-description: Teamy
+description: Team
 
 commands:
   team:
-    description: Wyswietla teamy
+    description: Show team
   teamy:
-    description: Wyswietla teamy
+    description: Show team
   bxteam:
+    description: Info plugin
